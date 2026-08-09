@@ -71,13 +71,29 @@ public static class RpcLoopback
         return false;
     }
 
+    /// <summary>
+    ///     The envelope tag <see cref="InnerNetClient.StartRpcImmediately" /> uses for a message addressed to one client.
+    ///     The game writes these as raw numbers rather than through an enum.
+    /// </summary>
+    private const byte GameDataToFlag = 6;
+
     private static void Dispatch(InnerNetClient client, MessageWriter msg, int targetClientId)
     {
-        var reader = MessageReader.Get(msg.Buffer);
+        // A writer's buffer opens with a send option header - 3 bytes when reliable, 1 otherwise - that is not part of
+        // the message. ToByteArray(false) drops it and trims to the written length, so the result starts at the
+        // envelope's own header and nothing has to assume the header's size.
+        var reader = MessageReader.Get(msg.ToByteArray(false));
 
         try
         {
             var envelope = reader.ReadMessage();
+
+            if (envelope.Tag != GameDataToFlag)
+            {
+                MCIPlugin.Logger.LogError($"Dropped an rpc aimed at bot {targetClientId}: expected envelope tag {GameDataToFlag}, got {envelope.Tag}.");
+                return;
+            }
+
             envelope.ReadInt32(); // game id
             envelope.ReadPackedInt32(); // target client id, already known
 
