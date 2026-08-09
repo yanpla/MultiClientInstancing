@@ -4,10 +4,8 @@ using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
 using Il2CppInterop.Runtime.Injection;
 using MCI.Components;
-using MiraAPI;
 using Reactor;
 using Reactor.Utilities;
-using TownOfUs;
 using UnityEngine.SceneManagement;
 
 namespace MCI;
@@ -15,8 +13,6 @@ namespace MCI;
 [BepInAutoPlugin("auavengers.tou.mci", "TOU-MCI")]
 [BepInProcess("Among Us.exe")]
 [BepInDependency(ReactorPlugin.Id)]
-[BepInDependency(MiraApiPlugin.Id)]
-[BepInDependency(TownOfUsPlugin.Id)]
 [BepInDependency(SubmergedCompatibility.SUBMERGED_GUID, BepInDependency.DependencyFlags.SoftDependency)]
 public partial class MCIPlugin : BasePlugin
 {

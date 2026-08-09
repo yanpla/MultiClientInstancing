@@ -3,15 +3,6 @@ using Il2CppInterop.Runtime.Attributes;
 using InnerNet;
 using MCI.Embedded.ReactorImGui;
 using MCI.Patches;
-using MiraAPI.Hud;
-using MiraAPI.Modifiers;
-using MiraAPI.Modifiers.Types;
-using MiraAPI.Networking;
-using MiraAPI.Utilities;
-using TownOfUs.Modules;
-using TownOfUs.Modules.Anims;
-using TownOfUs.Networking;
-using TownOfUs.Utilities;
 using UnityEngine;
 
 namespace MCI.Components;
@@ -132,148 +123,14 @@ public class Debugger : MonoBehaviour
                 MeetingHud.Instance.RpcClose();
 
             if (GUILayout.Button("Kill Self"))
-                PlayerControl.LocalPlayer.RpcCustomMurder(PlayerControl.LocalPlayer, showKillAnim: false);
+                PlayerControl.LocalPlayer.RpcMurderPlayer(PlayerControl.LocalPlayer, true);
 
             if (GUILayout.Button("Kill All"))
             {
-                PlayerControl.LocalPlayer.RpcSpecialMultiMurder(Helpers.GetAlivePlayers(), true, showKillAnim: false);
-            }
-
-            if (GUILayout.Button("Revive Self"))
-            {
-                var inMeetingOrExile = ExileController.Instance != null || MeetingHud.Instance != null;
-                    if (!PlayerControl.LocalPlayer.HasDied())
-                    {
-                        return;
-                    }
-
-                    var roleWhenAlive = PlayerControl.LocalPlayer.GetRoleWhenAlive();
-
-                    var body = FindObjectsOfType<DeadBody>()
-                        .FirstOrDefault(b => b.ParentId == PlayerControl.LocalPlayer.PlayerId);
-                    var position = new Vector2(PlayerControl.LocalPlayer.transform.localPosition.x, PlayerControl.LocalPlayer.transform.localPosition.y);
-
-                    if (body != null)
-                    {
-                        position = new Vector2(body.transform.localPosition.x,
-                            body.transform.localPosition.y + 0.3636f);
-                        Destroy(body.gameObject);
-                    }
-
-                    GameHistory.ClearMurder(PlayerControl.LocalPlayer);
-
-                    PlayerControl.LocalPlayer.Revive();
-
-                    if (!inMeetingOrExile)
-                    {
-                        PlayerControl.LocalPlayer.transform.position = position;
-                        PlayerControl.LocalPlayer.NetTransform.RpcSnapTo(position);
-
-                        if (PlayerControl.LocalPlayer.MyPhysics.body != null)
-                        {
-                            PlayerControl.LocalPlayer.MyPhysics.body.position = position;
-                            Physics2D.SyncTransforms();
-                        }
-                    }
-
-                    if (ModCompatibility.IsSubmerged())
-                    {
-                        ModCompatibility.ChangeFloor(PlayerControl.LocalPlayer.transform.position.y > -7);
-                    }
-
-                    PlayerControl.LocalPlayer.ChangeRole((ushort)roleWhenAlive.Role, recordRole: false);
-
-                    if (PlayerControl.LocalPlayer.Data.Role is IAnimated animatedRole)
-                    {
-                        animatedRole.IsVisible = true;
-                        animatedRole.SetVisible();
-                    }
-
-                    foreach (var button in CustomButtonManager.Buttons.Where(x => x.Enabled(PlayerControl.LocalPlayer.Data.Role))
-                                 .OfType<IAnimated>())
-                    {
-                        button.IsVisible = true;
-                        button.SetVisible();
-                    }
-
-                    foreach (var modifier in PlayerControl.LocalPlayer.GetModifiers<GameModifier>().Where(x => x is IAnimated))
-                    {
-                        if (modifier is IAnimated animatedMod)
-                        {
-                            animatedMod.IsVisible = true;
-                            animatedMod.SetVisible();
-                        }
-                    }
-            }
-
-            if (GUILayout.Button("Revive All"))
-            {
-                var inMeetingOrExile = ExileController.Instance != null || MeetingHud.Instance != null;
-                foreach (var player in PlayerControl.AllPlayerControls)
+                foreach (var player in PlayerControl.AllPlayerControls.ToArray()
+                             .Where(x => x.Data != null && !x.Data.IsDead && !x.Data.Disconnected))
                 {
-                    if (!player.HasDied())
-                    {
-                        continue;
-                    }
-
-                    var roleWhenAlive = player.GetRoleWhenAlive();
-
-                    var body = FindObjectsOfType<DeadBody>()
-                        .FirstOrDefault(b => b.ParentId == player.PlayerId);
-                    var position = new Vector2(player.transform.localPosition.x, player.transform.localPosition.y);
-
-                    if (body != null)
-                    {
-                        position = new Vector2(body.transform.localPosition.x,
-                            body.transform.localPosition.y + 0.3636f);
-                        Destroy(body.gameObject);
-                    }
-
-                    GameHistory.ClearMurder(player);
-
-                    player.Revive();
-
-                    if (!inMeetingOrExile)
-                    {
-                        player.transform.position = position;
-                        player.NetTransform.RpcSnapTo(position);
-
-                        if (player.MyPhysics?.body != null)
-                        {
-                            player.MyPhysics.body.position = position;
-                            Physics2D.SyncTransforms();
-                        }
-                    }
-
-                    if (ModCompatibility.IsSubmerged() && PlayerControl.LocalPlayer != null &&
-                        PlayerControl.LocalPlayer.PlayerId == player.PlayerId)
-                    {
-                        ModCompatibility.ChangeFloor(player.transform.position.y > -7);
-                    }
-
-                    player.ChangeRole((ushort)roleWhenAlive.Role, recordRole: false);
-
-                    if (player.Data.Role is IAnimated animatedRole)
-                    {
-                        animatedRole.IsVisible = true;
-                        animatedRole.SetVisible();
-                    }
-
-                    foreach (var button in CustomButtonManager.Buttons.Where(x => x.Enabled(player.Data.Role))
-                                 .OfType<IAnimated>())
-                    {
-                        button.IsVisible = true;
-                        button.SetVisible();
-                    }
-
-                    foreach (var modifier in player.GetModifiers<GameModifier>().Where(x => x is IAnimated))
-                    {
-                        if (modifier is IAnimated animatedMod)
-                        {
-                            animatedMod.IsVisible = true;
-                            animatedMod.SetVisible();
-                        }
-                    }
+                    PlayerControl.LocalPlayer.RpcMurderPlayer(player, true);
                 }
             }
 

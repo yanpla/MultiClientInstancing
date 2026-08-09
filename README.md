@@ -1,4 +1,4 @@
-ngu# AmongUs.MultiClientInstancing
+# AmongUs.MultiClientInstancing
 
 I think the best way to describe this is as a method of host testing what your "mod" could look like with multiple clients.<br>
 It is in no way a replacement for testing your mod.<br>
@@ -10,7 +10,15 @@ Think of this as more like a ease-of-access utility then a standlone testing env
 Please pr and contribute where you feel is necessary.<br>
 The mod is not designed to be the end all for testing - so expect some things not to work - please read the source to understand how this works.<br>
 Every bot shares the one real client's process and object graph, so an rpc that only changes game state behaves correctly, while one that drives the hud or plays an animation will do so on whichever player you are currently controlling.<br>
-Relies on Bepinex
+Relies on BepInEx and Reactor only - it is not tied to any particular mod.
+
+## Building
+
+```
+dotnet build -c Release
+```
+
+Pass `-p:AmongUs="C:\path\to\Among Us"` to copy the built plugin straight into `BepInEx/plugins`.
 
 ## Controls
 
@@ -20,7 +28,7 @@ and in game press `F9` to move up or `F10` to move down through the id list.<br>
 You can press `F11` to remove all bots.<br>
 You can press `Shift` + `F6` to switch between IKnowWhatI'mDoing Mode.
 
-(note this is older footage as i've now got a system in place to remove the extra buttons from tou, and names are simplified)
+(note this is older footage, and names are simplified)
 
 
 https://user-images.githubusercontent.com/38029594/182777865-2ec28bfb-4815-41f4-9936-4e4a2fc8b713.mp4
