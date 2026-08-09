@@ -15,8 +15,8 @@
         <VersionPrefix>1.0.0</VersionPrefix>
         <VersionSuffix>dev</VersionSuffix>
         <Description>MultiClientInstancing - spawn and control extra clients in a localhosted lobby</Description>
-        <Authors>MyDragonBreath, whichtwix, AlchlcSystm, lekillerdesgames, Atony</Authors>
-        <RepositoryUrl>https://github.com/AU-Avengers/TOU-Mira-MultiClientInstancing</RepositoryUrl>
+        <Authors>MyDragonBreath, whichtwix, AlchlcSystm, lekillerdesgames, Atony, yanpla</Authors>
+        <RepositoryUrl>https://github.com/yanpla/MultiClientInstancing</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 

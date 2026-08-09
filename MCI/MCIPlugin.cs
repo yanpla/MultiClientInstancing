@@ -32,7 +32,7 @@ public partial class MCIPlugin : BasePlugin
     ///     Determines if the current build is a dev build.
     /// </summary>
     public static bool IsDevBuild => Version.Contains("dev", StringComparison.OrdinalIgnoreCase) || Version.Contains("ci", StringComparison.OrdinalIgnoreCase);
-    
+
     public override void Load()
     {
         ReactorCredits.Register("TOU-MCI", Version, IsDevBuild, ReactorCredits.AlwaysShow);
